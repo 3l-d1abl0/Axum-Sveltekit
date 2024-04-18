@@ -2,8 +2,6 @@ use crate::app_state::AppState;
 use axum::extract::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
-use axum::routing::post;
-use axum::Router;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -29,7 +27,9 @@ pub async fn create_todo(
 ) -> Result<(StatusCode, Json<Todo>), (StatusCode, String)> {
     println!("Here !");
 
-    //let config = &app_state.config;
+    let config = &app_state.config;
+
+    println!("{:?}", config);
 
     let created_todo = Todo {
         id: 1,

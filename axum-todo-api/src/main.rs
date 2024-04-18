@@ -6,7 +6,6 @@ use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::Router;
 use serde::Serialize;
-use std::sync::Arc;
 use tokio::net::TcpListener;
 
 mod app_state;
@@ -22,9 +21,6 @@ struct Hello {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Create new app state
     let new_app_state = AppState::new().await;
-
-    //let config = config::load_config();
-    //let app_config = Arc::new(config);
 
     let hello = Hello {
         message: String::from("Hi"),
