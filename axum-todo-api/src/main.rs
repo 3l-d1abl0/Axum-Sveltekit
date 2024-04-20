@@ -8,9 +8,12 @@ use axum::Router;
 use serde::Serialize;
 use tokio::net::TcpListener;
 
+use sqlx::mysql::{MySqlPool, MySqlPoolOptions};
+
 mod app_state;
 mod config;
 mod routes;
+mod schemas;
 
 #[derive(Serialize, Clone)]
 struct Hello {
@@ -21,6 +24,27 @@ struct Hello {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //Create new app state
     let new_app_state = AppState::new().await;
+
+    println!("STATE {:?}", new_app_state);
+
+    println!("DB: {}", new_app_state.config.database_url);
+
+    let pool = match MySqlPoolOptions::new()
+        .max_connections(10)
+        .connect(&new_app_state.config.database_url)
+        .await
+    {
+        Ok(pool) => {
+            println!("Connected to Db !");
+            pool
+        }
+        Err(err) => {
+            println!("Failed to connect to Db: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+
+    new_app_state.update_db_pool(pool).await;
 
     let hello = Hello {
         message: String::from("Hi"),
